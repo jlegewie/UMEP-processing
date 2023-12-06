@@ -73,7 +73,7 @@ import string
 import random
 
 # For "Save necessary rasters for TreePlanter tool"
-from shutil import copyfile
+from shutil import copyfile, rmtree
 
 class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
     """
@@ -1248,6 +1248,8 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
         saveraster(gdal_dsm, outputDir + '/Tmrt_average.tif', tmrtplot)
         feedback.setProgressText("SOLWEIG: Model calculation finished.")
 
+        # Delete SVF
+        rmtree(self.temp_dir, ignore_errors=True)
         return {self.OUTPUT_DIR: outputDir}
     
     def name(self):
