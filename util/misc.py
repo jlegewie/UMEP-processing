@@ -26,11 +26,11 @@ def cart2pol(x, y, units='deg'):
     return theta, radius
 
 
-def saveraster(gdal_data, filename, raster):
+def saveraster(gdal_data, filename, raster, data_type = GDT_Float32):
     rows = gdal_data.RasterYSize
     cols = gdal_data.RasterXSize
 
-    outDs = gdal.GetDriverByName("GTiff").Create(filename, cols, rows, int(1), GDT_Float32)
+    outDs = gdal.GetDriverByName("GTiff").Create(filename, cols, rows, int(1), data_type)
     outBand = outDs.GetRasterBand(1)
 
     # write the data
@@ -43,11 +43,11 @@ def saveraster(gdal_data, filename, raster):
     outDs.SetGeoTransform(gdal_data.GetGeoTransform())
     outDs.SetProjection(gdal_data.GetProjection())
 
-def saverasternd(gdal_data, filename, raster):
+def saverasternd(gdal_data, filename, raster, data_type = GDT_Float32):
     rows = gdal_data.RasterYSize
     cols = gdal_data.RasterXSize
 
-    outDs = gdal.GetDriverByName("GTiff").Create(filename, cols, rows, int(1), GDT_Float32)
+    outDs = gdal.GetDriverByName("GTiff").Create(filename, cols, rows, int(1), data_type)
     outBand = outDs.GetRasterBand(1)
 
     # write the data
