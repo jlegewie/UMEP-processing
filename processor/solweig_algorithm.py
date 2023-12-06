@@ -689,16 +689,16 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
             Solweig_2015a_metdata_noload(self.metdata,location, utc)
 
         # Creating vectors from meteorological input
-        DOY = self.metdata[:, 1]
-        hours = self.metdata[:, 2]
-        minu = self.metdata[:, 3]
-        Ta = self.metdata[:, 11]
-        RH = self.metdata[:, 10]
-        radG = self.metdata[:, 14]
-        radD = self.metdata[:, 21]
-        radI = self.metdata[:, 22]
-        P = self.metdata[:, 12]
-        Ws = self.metdata[:, 9]
+        DOY = self.metdata[:, 1]  # id - Day of year [DOY]
+        hours = self.metdata[:, 2] # it - Hour [H]
+        minu = self.metdata[:, 3] # imin - Minute [M]
+        Ta = self.metdata[:, 11] # Tair - Air temperature [°C] (-30 to 55)
+        RH = self.metdata[:, 10] # RH - Relative Humidity [%] (5-100)
+        radG = self.metdata[:, 14] # kdown - Incoming shortwave radiation [W m-2]  (0 to 1200)
+        radD = self.metdata[:, 21] # kdiff - Diffuse shortwave radiation [W m-2] (0 to 600)
+        radI = self.metdata[:, 22] # kdir - Direct shortwave radiation [W m-2] (0 to 1200)
+        P = self.metdata[:, 12] # pres - Surface barometric pressure [kPa] (90 to 107)
+        Ws = self.metdata[:, 9] # U - Wind speed [m s-1] (0.001 to 60)
         
         # Check if diffuse and direct radiation exist
         if onlyglobal == 0:
