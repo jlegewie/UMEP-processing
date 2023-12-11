@@ -689,6 +689,7 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
             Solweig_2015a_metdata_noload(self.metdata,location, utc)
 
         # Creating vectors from meteorological input
+        YEAR = self.metdata[:, 0]  # iy - year
         DOY = self.metdata[:, 1]  # id - Day of year [DOY]
         hours = self.metdata[:, 2] # it - Hour [H]
         minu = self.metdata[:, 3] # imin - Minute [M]
@@ -1244,8 +1245,9 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
         # Copying met file for SpatialTC
         copyfile(inputMet, outputDir + '/metforcing.txt')
         
-        tmrtplot = tmrtplot / Ta.__len__()  # fix average Tmrt instead of sum, 20191022
-        saveraster(gdal_dsm, outputDir + '/Tmrt_average.tif', tmrtplot)
+        tmrtplot = ( tmrtplot / Ta.__len__() ) * 100  # fix average Tmrt instead of sum, 20191022
+        file = '{dir}/Tmrt_avg_{year}_{day}.tif'.format(dir = outputDir, year = int(YEAR[0]), day = int(DOY[0]))
+        saveraster(gdal_dsm, file, tmrtplot, GDT_Int16)
         feedback.setProgressText("SOLWEIG: Model calculation finished.")
 
         # Delete SVF
