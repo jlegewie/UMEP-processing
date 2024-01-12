@@ -940,7 +940,9 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
         # Main function
         feedback.setProgressText("Executing main model")
     
-        tmrtplot = np.zeros((rows, cols))
+        # Daily averagve
+        counter = 0
+        tmrtavg = np.zeros((rows, cols))
 
         # Initiate array for I0 values
         if np.unique(DOY).shape[0] > 1:
@@ -1053,7 +1055,18 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
             if i < first_unique_day.shape[0]:
                 I0_array[i] = I0
 
-            tmrtplot = tmrtplot + Tmrt
+            # Daily average
+            tmrtavg = tmrtavg + Tmrt
+            counter = counter + 1
+            # Write daily average on last time of day
+            if DOY.size == (i + 1) or DOY[i] != DOY[i + 1]:
+                tmrtavg = (tmrtavg / counter) * 100
+                file = '{dir}/Tmrt_avg_{year}_{day}.tif'.format(dir = outputDir, year = int(YEAR[i]), day = int(DOY[i]))
+                saveraster(gdal_dsm, file, tmrtavg, GDT_Int16)
+                tmrtavg = np.zeros((rows, cols))
+                counter = 0
+                # feedback.setProgressText("SOLWEIG: Writing average Tmrt for {year}-{day}.".format(year = YEAR[i], day = DOY[i]))
+
 
             if altitude[0][i] > 0:
                 w = 'D'
@@ -1247,9 +1260,6 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
         # Copying met file for SpatialTC
         copyfile(inputMet, outputDir + '/metforcing.txt')
         
-        tmrtplot = ( tmrtplot / Ta.__len__() ) * 100  # fix average Tmrt instead of sum, 20191022
-        file = '{dir}/Tmrt_avg_{year}_{day}.tif'.format(dir = outputDir, year = int(YEAR[0]), day = int(DOY[0]))
-        saveraster(gdal_dsm, file, tmrtplot, GDT_Int16)
         feedback.setProgressText("SOLWEIG: Model calculation finished.")
 
         # Delete SVF
