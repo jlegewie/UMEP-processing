@@ -18,13 +18,10 @@ def Solweig_2015a_metdata_noload(inputdata, location, UTC):
     """
 
     met = inputdata
+    DOY = met[:, 1]  # id - Day of year [DOY]
     data_len = len(met[:, 0])
     dectime = met[:, 1]+met[:, 2] / 24 + met[:, 3] / (60*24.)
     dectimemin = met[:, 3] / (60*24.)
-    if data_len == 1:
-        halftimestepdec = 0
-    else:
-        halftimestepdec = (dectime[1] - dectime[0]) / 2.
     time = dict()
     time['sec'] = 0
     time['UTC'] = UTC
@@ -44,11 +41,17 @@ def Solweig_2015a_metdata_noload(inputdata, location, UTC):
     sunmax = dict()
 
     for i, row in enumerate(met[:, 0]):
+        newday = i == 0 or DOY[i] != DOY[i-1]
         if met[i, 1] == 221:
             test = 4
         YMD = datetime.datetime(int(met[i, 0]), 1, 1) + datetime.timedelta(int(met[i, 1]) - 1)
         # Finding maximum altitude in 15 min intervals (20141027)
-        if (i == 0) or (np.mod(dectime[i], np.floor(dectime[i])) == 0):
+        if newday or (np.mod(dectime[i], np.floor(dectime[i])) == 0):
+            if data_len == (i+1) or DOY[i] != DOY[i+1]:
+                halftimestepdec = 0
+            else:
+                halftimestepdec = (dectime[i+1] - dectime[i]) / 2.
+            sunmax = dict()
             fifteen = 0.
             sunmaximum = -90.
             sunmax['zenith'] = 90.

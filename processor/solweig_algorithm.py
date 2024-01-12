@@ -815,11 +815,6 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
 
         # %Initialization of maps
         Knight = np.zeros((rows, cols))
-        Tgmap1 = np.zeros((rows, cols))
-        Tgmap1E = np.zeros((rows, cols))
-        Tgmap1S = np.zeros((rows, cols))
-        Tgmap1W = np.zeros((rows, cols))
-        Tgmap1N = np.zeros((rows, cols))
         
         # building grid and land cover preparation
         sitein = self.plugin_dir + "/landcoverclasses_2016a.txt"
@@ -908,18 +903,6 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
             TmaxLST = 15.
             TmaxLST_wall = 15.
 
-         # Initialisation of time related variables
-        if Ta.__len__() == 1:
-            timestepdec = 0
-        else:
-            timestepdec = dectime[1] - dectime[0]
-        timeadd = 0.
-        timeaddE = 0.
-        timeaddS = 0.
-        timeaddW = 0.
-        timeaddN = 0.
-        firstdaytime = 1.
-
         WriteMetadataSOLWEIG.writeRunInfo(outputDir, filepath_dsm, gdal_dsm, usevegdem,
                                               filePath_cdsm, trunkfile, filePath_tdsm, lat, lon, utc, landcover,
                                               filePath_lc, metfileexist, inputMet, self.metdata, self.plugin_dir,
@@ -958,7 +941,6 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
         feedback.setProgressText("Executing main model")
     
         tmrtplot = np.zeros((rows, cols))
-        TgOut1 = np.zeros((rows, cols))
 
         # Initiate array for I0 values
         if np.unique(DOY).shape[0] > 1:
@@ -977,6 +959,26 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
                         '%.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f'
 
         for i in np.arange(0, Ta.__len__()):
+            # Set variables on new day
+            newday = i == 0 or DOY[i] != DOY[i-1]
+            # if i != 0 and DOY[i] != DOY[i - 1]:
+            if newday:
+                TgOut1 = np.zeros((rows, cols))
+                 # Initialisation of time related variables
+                if Ta.__len__() == (i+1) or DOY[i] != DOY[i+1]:
+                    timestepdec = 0
+                else:
+                    timestepdec = dectime[i+1] - dectime[i]
+                # Initialisation of time related variables
+                timeadd = 0.
+                firstdaytime = 1.
+                # %Initialization of maps
+                Tgmap1 = np.zeros((rows, cols))
+                Tgmap1E = np.zeros((rows, cols))
+                Tgmap1S = np.zeros((rows, cols))
+                Tgmap1W = np.zeros((rows, cols))
+                Tgmap1N = np.zeros((rows, cols))
+
             feedback.setProgress(int(i * (100. / Ta.__len__()))) # move progressbar forward
             if feedback.isCanceled():
                 feedback.setProgressText("Calculation cancelled")
