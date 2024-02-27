@@ -297,7 +297,11 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
 
         self.plugin_dir = os.path.dirname(__file__)
         temp_dir_name = 'temp-' + ''.join(random.choice(string.ascii_uppercase) for _ in range(8))
-        self.temp_dir = os.path.join(os.path.dirname(self.plugin_dir), temp_dir_name)
+        dir = os.getenv('XDG_RUNTIME_DIR')
+        if not os.path.exists(dir):
+            dir = self.plugin_dir
+        self.temp_dir = os.path.join(os.getenv('XDG_RUNTIME_DIR'), temp_dir_name)
+
 
     def processAlgorithm(self, parameters, context, feedback):
         np.seterr(divide='ignore', invalid='ignore')
