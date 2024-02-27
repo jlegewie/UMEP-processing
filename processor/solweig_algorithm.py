@@ -1193,8 +1193,9 @@ class ProcessingSOLWEIGAlgorithm(QgsProcessingAlgorithm):
                 XM = ''
 
             if outputTmrt:
+                Tmrt = Tmrt * 100
                 saveraster(gdal_dsm, outputDir + '/Tmrt_' + str(int(YYYY[0, i])) + '_' + str(int(DOY[i]))
-                                + '_' + XH + str(int(hours[i])) + XM + str(int(minu[i])) + w + '.tif', Tmrt)
+                                + '_' + XH + str(int(hours[i])) + XM + str(int(minu[i])) + w + '.tif', Tmrt, GDT_Int16)
             if outputKup:
                 saveraster(gdal_dsm, outputDir + '/Kup_' + str(int(YYYY[0, i])) + '_' + str(int(DOY[i]))
                                 + '_' + XH + str(int(hours[i])) + XM + str(int(minu[i])) + w + '.tif', Kup)
